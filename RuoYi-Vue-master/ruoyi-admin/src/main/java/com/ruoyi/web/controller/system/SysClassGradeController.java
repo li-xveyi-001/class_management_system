@@ -90,6 +90,7 @@ public class SysClassGradeController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody SysClassGrade sysClassGrade)
     {
+        System.out.println("成绩管理");
         return toAjax(sysClassGradeService.updateSysClassGrade(sysClassGrade));
     }
 

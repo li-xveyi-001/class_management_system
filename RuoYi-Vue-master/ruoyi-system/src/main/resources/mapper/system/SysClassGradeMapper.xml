@@ -6,6 +6,7 @@
 
     <resultMap type="SysClassGrade" id="SysClassGradeResult">
         <result property="id"    column="id"    />
+
         <result property="userNumber"    column="user_number"    />
         <result property="userName"    column="user_name"    />
         <result property="overallRank"    column="overall_rank"    />
@@ -37,7 +38,7 @@
     </sql>
 
     <select id="selectSysClassGradeList" parameterType="SysClassGrade" resultMap="SysClassGradeResult">
-        select c.user_number, c.dept_id, c.user_name, c.overall_score, c.overall_rank, c.learn_rank, c.learn_score, c.quantification_rank, c.quantification_score, c.semester_id, c.remark,  d.dept_name,s.semester_name
+        select  id,c.user_number,   c.user_name, c.overall_score, c.overall_rank, c.learn_rank, c.learn_score, c.quantification_rank, c.quantification_score, c.semester_id, c.remark,  d.dept_name,s.semester_name
             from sys_class_grade c
             left join sys_dept d on c.dept_id = d.dept_id
             left join sys_semester s on s.semester_id = c.semester_id
@@ -57,7 +58,10 @@
     </select>
 
     <select id="selectSysClassGradeById" parameterType="Long" resultMap="SysClassGradeResult">
-        <include refid="selectSysClassGradeVo"/>
+        select  id,c.user_number,   c.user_name, c.overall_score, c.overall_rank, c.learn_rank, c.learn_score, c.quantification_rank, c.quantification_score, c.semester_id, c.remark,  d.dept_name,s.semester_name
+        from sys_class_grade c
+                 left join sys_dept d on c.dept_id = d.dept_id
+                 left join sys_semester s on s.semester_id = c.semester_id
         where id = #{id}
     </select>
 

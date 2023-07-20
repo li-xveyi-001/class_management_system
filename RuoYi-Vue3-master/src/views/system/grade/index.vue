@@ -199,6 +199,7 @@
               }}
             </template>
           </el-table-column>
+          <el-table-column label="用户编号" align="center" prop="id"  />
           <el-table-column
             label="学生学号"
             align="center"
@@ -243,7 +244,7 @@
               <el-tooltip
                 content="修改"
                 placement="top"
-                v-if="scope.row.userId !== 1"
+                v-if="scope.row.id !== 1"
               >
                 <el-button
                   size="mini"
@@ -256,7 +257,7 @@
               <el-tooltip
                 content="删除"
                 placement="top"
-                v-if="scope.row.userId !== 1"
+                v-if="scope.row.id !== 1"
               >
                 <el-button
                   size="mini"
@@ -317,7 +318,7 @@
         <el-form-item label="班级" prop="deptName">
           <el-input v-model="form.deptName" placeholder="请输入班级ID" />
         </el-form-item>
-        <el-form-item label="学期ID" prop="semesterName">
+        <el-form-item label="学期" prop="semesterName">
           <el-input v-model="form.semesterName" placeholder="请输入学期ID" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -364,6 +365,7 @@ const gradeList = ref([]);
 const title = ref("");
 // 是否显示弹出层
 const open = ref(false);
+const hidden=ref(true);
 const deptName = ref("");
 const deptOptions = ref(undefined);
 
@@ -459,7 +461,8 @@ function cancel() {
 // 表单重置
 function reset() {
   form.value = {
-    id: undefined,
+   
+    id:undefined,
     userNumber: undefined,
     userName: undefined,
     overallRank: undefined,
@@ -486,9 +489,11 @@ function resetQuery() {
 }
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  ids.value = selection.map((item) => item.id);
+
+  ids.value = selection.map(item => item.id);
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
+  console.log(ids.value);
 }
 /** 新增按钮操作 */
 function handleAdd() {
@@ -502,6 +507,7 @@ function handleAdd() {
 function handleUpdate(row) {
   reset();
   const id = row.id || ids.value;
+  console.log(id);
   getGrade(id).then((response) => {
     form.value = response.data;
     open.value = true;
@@ -552,6 +558,7 @@ function handleExport() {
     `grade_${new Date().getTime()}.xlsx`
   );
 }
+
 getList();
 getDeptTree();
 </script>
