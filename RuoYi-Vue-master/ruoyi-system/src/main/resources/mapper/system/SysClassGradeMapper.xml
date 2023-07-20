@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysClassGradeMapper">
+
+    <resultMap type="SysClassGrade" id="SysClassGradeResult">
+        <result property="id"    column="id"    />
+        <result property="userNumber"    column="user_number"    />
+        <result property="userName"    column="user_name"    />
+        <result property="overallRank"    column="overall_rank"    />
+        <result property="overallScore"    column="overall_score"    />
+        <result property="learnRank"    column="learn_rank"    />
+        <result property="learnScore"    column="learn_score"    />
+        <result property="quantificationRank"    column="quantification_rank"    />
+        <result property="quantificationScore"    column="quantification_score"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="semesterId"    column="semester_id"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="semesterName"    column="semester_name"    />
+<!--        <association property="dept"    column="dept_id" javaType="SysDept" resultMap="deptResult" />-->
+    </resultMap>
+
+<!--    <resultMap id="deptResult" type="SysDept">-->
+<!--        <id     property="deptId"    column="dept_id"     />-->
+<!--        <result property="parentId"  column="parent_id"   />-->
+<!--        <result property="deptName"  column="dept_name"   />-->
+<!--        <result property="ancestors" column="ancestors"   />-->
+<!--        <result property="orderNum"  column="order_num"   />-->
+<!--        <result property="leader"    column="leader"      />-->
+<!--        <result property="status"    column="dept_status" />-->
+<!--    </resultMap>-->
+
+    <sql id="selectSysClassGradeVo">
+        select id, user_number, user_name, overall_rank, overall_score, learn_rank, learn_score, quantification_rank, quantification_score, dept_id, semester_id, remark from sys_class_grade
+    </sql>
+
+    <select id="selectSysClassGradeList" parameterType="SysClassGrade" resultMap="SysClassGradeResult">
+        select c.user_number, c.dept_id, c.user_name, c.overall_score, c.overall_rank, c.learn_rank, c.learn_score, c.quantification_rank, c.quantification_score, c.semester_id, c.remark,  d.dept_name,s.semester_name
+            from sys_class_grade c
+            left join sys_dept d on c.dept_id = d.dept_id
+            left join sys_semester s on s.semester_id = c.semester_id
+
+        <where>
+            <if test="userNumber != null "> and user_number = #{userNumber}</if>
+            <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+            <if test="overallRank != null  and overallRank != ''"> and overall_rank = #{overallRank}</if>
+            <if test="overallScore != null  and overallScore != ''"> and overall_score = #{overallScore}</if>
+            <if test="learnRank != null  and learnRank != ''"> and learn_rank = #{learnRank}</if>
+            <if test="learnScore != null  and learnScore != ''"> and learn_score = #{learnScore}</if>
+            <if test="quantificationRank != null  and quantificationRank != ''"> and quantification_rank = #{quantificationRank}</if>
+            <if test="quantificationScore != null  and quantificationScore != ''"> and quantification_score = #{quantificationScore}</if>
+            <if test="deptId != null "> and c.dept_id = #{deptId}</if>
+            <if test="semesterId != null  and semesterId != ''"> and semester_id = #{semesterId}</if>
+        </where>
+    </select>
+
+    <select id="selectSysClassGradeById" parameterType="Long" resultMap="SysClassGradeResult">
+        <include refid="selectSysClassGradeVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSysClassGrade" parameterType="SysClassGrade" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_class_grade
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userNumber != null">user_number,</if>
+            <if test="userName != null">user_name,</if>
+            <if test="overallRank != null">overall_rank,</if>
+            <if test="overallScore != null">overall_score,</if>
+            <if test="learnRank != null">learn_rank,</if>
+            <if test="learnScore != null">learn_score,</if>
+            <if test="quantificationRank != null">quantification_rank,</if>
+            <if test="quantificationScore != null">quantification_score,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="semesterId != null">semester_id,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userNumber != null">#{userNumber},</if>
+            <if test="userName != null">#{userName},</if>
+            <if test="overallRank != null">#{overallRank},</if>
+            <if test="overallScore != null">#{overallScore},</if>
+            <if test="learnRank != null">#{learnRank},</if>
+            <if test="learnScore != null">#{learnScore},</if>
+            <if test="quantificationRank != null">#{quantificationRank},</if>
+            <if test="quantificationScore != null">#{quantificationScore},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="semesterId != null">#{semesterId},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysClassGrade" parameterType="SysClassGrade">
+        update sys_class_grade
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userNumber != null">user_number = #{userNumber},</if>
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="overallRank != null">overall_rank = #{overallRank},</if>
+            <if test="overallScore != null">overall_score = #{overallScore},</if>
+            <if test="learnRank != null">learn_rank = #{learnRank},</if>
+            <if test="learnScore != null">learn_score = #{learnScore},</if>
+            <if test="quantificationRank != null">quantification_rank = #{quantificationRank},</if>
+            <if test="quantificationScore != null">quantification_score = #{quantificationScore},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="semesterId != null">semester_id = #{semesterId},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysClassGradeById" parameterType="Long">
+        delete from sys_class_grade where id = #{id}
+    </delete>
+
+    <delete id="deleteSysClassGradeByIds" parameterType="String">
+        delete from sys_class_grade where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
