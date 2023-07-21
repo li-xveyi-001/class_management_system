@@ -28,7 +28,7 @@ public class SysClassGrade extends BaseEntity
     private Long deptId;
 
     /** 部门名字 */
-    @Excel(name = "班级名字", type = Excel.Type.IMPORT)
+
     private String deptName;
 
     /** 学生姓名 */
@@ -63,10 +63,10 @@ public class SysClassGrade extends BaseEntity
 
 
     /** 学期ID */
-    @Excel(name = "学期ID")
-    private String semesterId;
+    @Excel(name = "学期Id")
+    private Long semesterId;
     /** 学期名称 */
-    @Excel(name = "学期ID")
+
     private String semesterName;
 
 
@@ -168,12 +168,12 @@ public class SysClassGrade extends BaseEntity
         return quantificationScore;
     }
 
-    public void setSemesterId(String semesterId)
+    public void setSemesterId(Long semesterId)
     {
         this.semesterId = semesterId;
     }
 
-    public String getSemesterId()
+    public Long getSemesterId()
     {
         return semesterId;
     }
