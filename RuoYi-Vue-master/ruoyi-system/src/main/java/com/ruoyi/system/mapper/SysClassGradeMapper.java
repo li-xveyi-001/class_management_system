@@ -1,7 +1,10 @@
 package com.ruoyi.system.mapper;
 
 import java.util.List;
+
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.system.domain.SysClassGrade;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 【请填写功能名称】Mapper接口
@@ -58,4 +61,6 @@ public interface SysClassGradeMapper
      * @return 结果
      */
     public int deleteSysClassGradeByIds(Long[] ids);
+
+    SysUser selectUserByUserNumber (@Param("userNumber") Long userNumber,@Param("semesterId") Long semesterId);
 }

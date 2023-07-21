@@ -23,13 +23,13 @@ public class SysUser extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 用户ID */
-    @Excel(name = "用户序号", cellType = ColumnType.NUMERIC, prompt = "用户编号")
+//    @Excel(name = "用户序号", cellType = ColumnType.NUMERIC, prompt = "用户编号")
     private Long userId;
     /** 用户学号 */
     @Excel(name = "用户学号")
     private Long userNumber;
     /** 部门ID */
-    @Excel(name = "部门编号", type = Type.IMPORT)
+    @Excel(name = "班级编号", type = Type.IMPORT)
     private Long deptId;
 
     /** 用户账号 */

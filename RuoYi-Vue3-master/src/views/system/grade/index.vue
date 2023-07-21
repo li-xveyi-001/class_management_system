@@ -199,7 +199,13 @@
               }}
             </template>
           </el-table-column>
-          <el-table-column label="用户编号" align="center" prop="id"  />
+          <el-table-column
+            label="用户编号"
+            align="center"
+            prop="id"
+            v-if="hidden == false"
+          />
+
           <el-table-column
             label="学生学号"
             align="center"
@@ -315,11 +321,24 @@
             placeholder="请输入量化分数"
           />
         </el-form-item>
-        <el-form-item label="班级" prop="deptName">
-          <el-input v-model="form.deptName" placeholder="请输入班级ID" />
+        <el-form-item label="班级" prop="deptId">
+          <el-tree-select
+            v-model="form.deptId"
+            :data="deptOptions"
+            :props="{ value: 'id', label: 'label', children: 'children' }"
+            value-key="id"
+            placeholder="请选择归属部门"
+            check-strictly
+          />
         </el-form-item>
-        <el-form-item label="学期" prop="semesterName">
-          <el-input v-model="form.semesterName" placeholder="请输入学期ID" />
+        <el-form-item label="学期" prop="semesterId">
+          <el-select v-model="form.semesterId" placeholder="请选择学期">
+            <el-option label="2021-2022下半年" value="1" />
+            <el-option label="2022-2023上半年" value="2" />
+            <el-option label="2022-2023下半年" value="3" />
+            <el-option label="2023-2024上半年" value="4" />
+            <el-option label="2023-2024下半年" value="5" />
+          </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
@@ -329,6 +348,53 @@
         <div class="dialog-footer">
           <el-button type="primary" @click="submitForm">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 用户导入对话框 -->
+    <el-dialog
+      :title="upload.title"
+      v-model="upload.open"
+      width="400px"
+      append-to-body
+    >
+      <el-upload
+        ref="uploadRef"
+        :limit="1"
+        accept=".xlsx, .xls"
+        :headers="upload.headers"
+        :action="upload.url + '?updateSupport=' + upload.updateSupport"
+        :disabled="upload.isUploading"
+        :on-progress="handleFileUploadProgress"
+        :on-success="handleFileSuccess"
+        :auto-upload="false"
+        drag
+      >
+        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <template #tip>
+          <div class="el-upload__tip text-center">
+            <div class="el-upload__tip">
+              <el-checkbox
+                v-model="upload.updateSupport"
+              />是否更新已经存在的用户数据
+            </div>
+            <span>仅允许导入xls、xlsx格式文件。</span>
+            <el-link
+              type="primary"
+              :underline="false"
+              style="font-size: 12px; vertical-align: baseline"
+              @click="importTemplate"
+              >下载模板</el-link
+            >
+          </div>
+        </template>
+      </el-upload>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitFileForm">确 定</el-button>
+          <el-button @click="upload.open = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -345,6 +411,7 @@ import {
 } from "@/api/system/grade";
 import { deptTreeSelect } from "@/api/system/user";
 import { ref } from "vue";
+import { getToken } from "@/utils/auth";
 const { proxy } = getCurrentInstance();
 
 // 遮罩层
@@ -365,10 +432,25 @@ const gradeList = ref([]);
 const title = ref("");
 // 是否显示弹出层
 const open = ref(false);
-const hidden=ref(true);
+const hidden = ref(true);
 const deptName = ref("");
 const deptOptions = ref(undefined);
 
+/*** 用户导入参数 */
+const upload = reactive({
+  // 是否显示弹出层（用户导入）
+  open: false,
+  // 弹出层标题（用户导入）
+  title: "",
+  // 是否禁用上传
+  isUploading: false,
+  // 是否更新已经存在的用户数据
+  updateSupport: 0,
+  // 设置上传的请求头部
+  headers: { Authorization: "Bearer " + getToken() },
+  // 上传的地址
+  url: import.meta.env.VITE_APP_BASE_API + "/system/grade/importData"
+});
 // 查询参数
 const data = reactive({
   form: {},
@@ -416,8 +498,8 @@ const data = reactive({
     quantificationScore: [
       { required: true, message: "量化成绩分数不能为空", trigger: "blur" },
     ],
-    deptName: [{ required: true, message: "班级名不能为空", trigger: "blur" }],
-    semesterName: [
+    deptId: [{ required: true, message: "班级名不能为空", trigger: "blur" }],
+    semesterId: [
       { required: true, message: "学期Id不能为空", trigger: "blur" },
     ],
   },
@@ -440,7 +522,7 @@ function getDeptTree() {
 function handleNodeClick(data) {
   queryParams.value.deptId = data.id;
   handleQuery();
-};
+}
 
 /** 查询【请填写功能名称】列表 */
 function getList() {
@@ -461,8 +543,7 @@ function cancel() {
 // 表单重置
 function reset() {
   form.value = {
-   
-    id:undefined,
+    id: undefined,
     userNumber: undefined,
     userName: undefined,
     overallRank: undefined,
@@ -472,7 +553,9 @@ function reset() {
     quantificationRank: undefined,
     quantificationScore: undefined,
     deptName: undefined,
+    deptId: undefined,
     semesterName: undefined,
+    semesterId: undefined,
     remark: undefined,
   };
   proxy.resetForm("gradeRef");
@@ -489,8 +572,7 @@ function resetQuery() {
 }
 // 多选框选中数据
 function handleSelectionChange(selection) {
-
-  ids.value = selection.map(item => item.id);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
   console.log(ids.value);
@@ -548,6 +630,33 @@ function handleDelete(row) {
     })
     .catch(() => {});
 }
+
+/** 导入按钮操作 */
+function handleImport() {
+  upload.title = "用户导入";
+  upload.open = true;
+};
+/** 下载模板操作 */
+function importTemplate() {
+  proxy.download("system/grade/importTemplate", {
+  }, `user_template_${new Date().getTime()}.xlsx`);
+};
+/**文件上传中处理 */
+const handleFileUploadProgress = (event, file, fileList) => {
+  upload.isUploading = true;
+};
+/** 文件上传成功处理 */
+const handleFileSuccess = (response, file, fileList) => {
+  upload.open = false;
+  upload.isUploading = false;
+  proxy.$refs["uploadRef"].handleRemove(file);
+  proxy.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", { dangerouslyUseHTMLString: true });
+  getList();
+};
+/** 提交上传文件 */
+function submitFileForm() {
+  proxy.$refs["uploadRef"].submit();
+};
 /** 导出按钮操作 */
 function handleExport() {
   proxy.download(

@@ -123,4 +123,9 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectUserByUserNumber"  resultMap="SysClassGradeResult">
+        select  * from sys_class_grade
+        where user_number = #{userNumber} and semester_id=#{semesterId}
+    </select>
 </mapper>
